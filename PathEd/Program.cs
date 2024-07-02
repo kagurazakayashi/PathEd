@@ -1,69 +1,73 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Forms;
 
 namespace PathEd
 {
-	class Program
-	{
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		private static extern bool SetProcessDPIAware();
+    // 定義主程式類別
+    class Program
+    {
+        // 引入外部DLL函式，用於設置程序的DPI感知能力
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetProcessDPIAware();
 
-		static void Main(string[] args)
-		{
-			var hasValidArguments = args?.Length == 2 && (args[0] == "add" || args[0] == "remove");
+        // 程式入口點
+        static void Main(string[] args)
+        {
+            // 檢查命令行參數是否有效
+            var hasValidArguments = args?.Length >= 2 && (args[0].ToUpper() == "/A" || args[0].ToUpper() == "/D" || args[0] == "/?");
 
-			if (!hasValidArguments)
-			{
-				ShowHowToUse();
-				return;
-			}
+            // 建立 PathUpdater 物件
+            var updater = new PathUpdater(new MachinePath());
 
-			var updater = new PathUpdater(new MachinePath());
+            // 如果參數無效，顯示目前的路徑並退出程式
+            if (!hasValidArguments)
+            {
+                Console.WriteLine(updater.Get());
+                //ShowHowToUse();
+                return;
+            }
 
-			try
-			{
-				if (args[0] == "add")
-					updater.Add(args[1]);
-				else
-					updater.Remove(args[1]);
-			}
-			catch
-			{
-				System.Environment.Exit(1); // NO SUCCESS
-			}
+            try
+            {
+                // 根據參數執行相應的操作
+                if (args[0].ToUpper() == "/A")
+                {
+                    // 添加路徑
+                    updater.Add(args[1]);
+                }
+                else if (args[0].ToUpper() == "/D")
+                {
+                    // 刪除路徑
+                    updater.Remove(args[1]);
+                }
+                else if (args[0] == "/?")
+                {
+                    // 顯示如何使用程式
+                    ShowHowToUse();
+                }
+                // 顯示更新後的路徑
+                Console.WriteLine(updater.Get());
+            }
+            catch (Exception ex)
+            {
+                // 捕捉例外並顯示錯誤訊息
+                Console.WriteLine("ERROR: " + ex.ToString());
+                Environment.Exit(1); // 結束程式並設置退出碼為1
+            }
+        }
 
-			
-		}
+        // 顯示如何使用此程式的說明
+        private static void ShowHowToUse()
+        {
+            var appName = Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            Console.WriteLine($"\r\nUsage: {appName} [/A or /D] VAL");
+        }
 
-		private static void ShowHowToUse()
-		{
-			InitWinForms();
-
-			var appName = Path.GetFileName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			var q = "\"";
-			MessageBox.Show($@"{appName} allows you to safely add or remove values from the system's PATH variable.
-
-Call this executable with two arguments:
-  1. Action {q}add{q} or {q}remove{q} to add or remove a value
-  2. The value to add or remove
-
-Example:
-  {appName} add {q}C:\Program Files\RepoZ{q}
-
-Note:
-  You should put your value in quotes ({q}{q}) if it contains spaces.
-  This app is case insensitive, it will ignore value casing.
-", appName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-		}
-
-		private static void InitWinForms()
-		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-
-			if (Environment.OSVersion.Version.Major >= 6)
-				SetProcessDPIAware();
-		}
-	}
+        // 初始化 Windows 表單應用程式的 DPI 設定
+        private static void InitWinForms()
+        {
+            if (Environment.OSVersion.Version.Major >= 6)
+                SetProcessDPIAware();
+        }
+    }
 }
