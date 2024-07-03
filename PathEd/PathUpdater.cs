@@ -14,7 +14,7 @@ namespace PathEd
         /// <param name="path">IPath 介面實作的物件。</param>
 		public PathUpdater(IPath path)
         {
-            // 檢查 path 是否為 null，如果是，則拋出 ArgumentNullException。
+            // 檢查 path 是否為 null，如果是，則丟擲 ArgumentNullException。
             Path = path ?? throw new ArgumentNullException(nameof(path));
         }
 
@@ -22,24 +22,25 @@ namespace PathEd
         /// 取得目前的 PATH 變數。
         /// </summary>
         /// <returns>目前的 PATH 變數字串。</returns>
-        public string Get()
+        public string Get(bool isMachine)
         {
-            return Path.Get();
+            return Path.Get(isMachine);
         }
 
         /// <summary>
         /// 新增一個值到 PATH 變數中。
         /// </summary>
         /// <param name="value">要新增到 PATH 變數的值。</param>
-        /// <exception cref="ArgumentNullException">當 value 為 null 時拋出此例外。</exception>
-        public void Add(string value)
+        /// <param name="isMachine">是否為機器層級的環境變數。</param>
+        /// <exception cref="ArgumentNullException">當 value 為 null 時丟擲此例外。</exception>
+        public void Add(string value, bool isMachine)
         {
-            // 檢查 value 是否為 null，如果是，則拋出 ArgumentNullException。
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            // 檢查 value 是否為 null 。
+            if (value == null || value.Length == 0)
+                return;
 
             // 取得目前的 PATH 變數。
-            var pathVariables = Path.Get();
+            var pathVariables = Path.Get(isMachine);
 
             // 如果 PATH 變數為空，直接設定為新的值。
             if (string.IsNullOrEmpty(pathVariables))
@@ -59,22 +60,23 @@ namespace PathEd
             }
 
             // 設定更新後的 PATH 變數。
-            Path.Set(pathVariables);
+            Path.Set(pathVariables, isMachine);
         }
 
         /// <summary>
         /// 從 PATH 變數中移除一個值。
         /// </summary>
         /// <param name="value">要從 PATH 變數中移除的值。</param>
-        /// <exception cref="ArgumentNullException">當 value 為 null 時拋出此例外。</exception>
-		public void Remove(string value)
+        /// <param name="isMachine">是否為機器層級的環境變數。</param>
+        /// <exception cref="ArgumentNullException">當 value 為 null 時丟擲此例外。</exception>
+		public void Remove(string value, bool isMachine)
         {
-            // 檢查 value 是否為 null，如果是，則拋出 ArgumentNullException。
-            if (value == null)
-                throw new ArgumentNullException(nameof(value));
+            // 檢查 value 是否為 null 。
+            if (value == null || value.Length == 0)
+                return;
 
             // 取得目前的 PATH 變數。
-            var pathVariables = Path.Get();
+            var pathVariables = Path.Get(isMachine);
 
             // 如果 PATH 變數為空，則直接返回。
             if (string.IsNullOrEmpty(pathVariables))
@@ -84,7 +86,7 @@ namespace PathEd
             if (pathVariables.IndexOf(value, StringComparison.OrdinalIgnoreCase) == -1)
                 return;
 
-            // 使用正規表達式移除指定的值及其後的分號。
+            // 使用正規表示式移除指定的值及其後的分號。
             pathVariables = Regex.Replace(pathVariables, $"\"?{Regex.Escape(value)}\"?;?", "", RegexOptions.IgnoreCase);
 
             // 如果 PATH 變數末尾有多餘的分號，則移除。
@@ -92,7 +94,7 @@ namespace PathEd
                 pathVariables = pathVariables.Substring(0, pathVariables.Length - 1);
 
             // 設定更新後的 PATH 變數。
-            Path.Set(pathVariables);
+            Path.Set(pathVariables, isMachine);
         }
 
         /// <summary>

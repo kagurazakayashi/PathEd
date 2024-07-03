@@ -1,20 +1,22 @@
 ﻿namespace PathEd
 {
     /// <summary>
-    /// IPath 介面定義了用於取得和設置路徑的功能。
+    /// IPath 介面定義了用於取得和設定路徑的功能。
     /// </summary>
     public interface IPath
     {
         /// <summary>
-        /// 取得路徑的字串表示。
+        /// 讀取 PATH 環境變數。
         /// </summary>
-        /// <returns>路徑的字串表示。</returns>
-        string Get();
+        /// <param name="isMachine">是否為機器層級的環境變數。</param>
+        /// <returns>機器層級的 PATH 環境變數字串。</returns>
+        string Get(bool isMachine);
 
         /// <summary>
-        /// 設置路徑的值。
+        /// 寫入 PATH 環境變數。
         /// </summary>
-        /// <param name="value">要設置的路徑值。</param>
-        void Set(string value);
+        /// <param name="value">新的 PATH 變數值。</param>
+        /// <param name="isMachine">是否為機器層級的環境變數。</param>
+        void Set(string value, bool isMachine);
     }
 }

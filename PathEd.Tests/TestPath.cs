@@ -4,8 +4,8 @@
 	{
 		private string _path = "";
 
-		public string Get() => _path;
+		public string Get(bool isMachine) => _path;
 
-		public void Set(string value) => _path = value;
+		public void Set(string value, bool isMachine) => _path = value;
 	}
 }
