@@ -7,7 +7,7 @@
     <ProjectGuid>{7FAA6495-170F-46E5-9B28-28D39BA7F7E3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>PathEd</RootNamespace>
-    <AssemblyName>PathEd</AssemblyName>
+    <AssemblyName>path</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
